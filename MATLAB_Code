@@ -1,0 +1,58 @@
+%open image from downloads
+rgbImage = imread('C:\Users\savas\OneDrive\Pictures\Camera Roll\WIN_20240319_09_54_28_Pro.jpg');
+
+% cam = webcam('Logitech');
+% cropped_image = snapshot(cam);
+
+%crops image to middle of picture
+cropped_image = imcrop(rgbImage,[420 1 1499 1079]);
+
+%find size of image
+[rows, columns, numberOfColorChannels] = size(cropped_image);
+
+%columns modified to accomadate new cropped image (1080 by 1080) as columns
+%is now 1500 instead of 1080 when it should be 1080 for cropped image 
+columns = columns - 420;
+
+%variable for list
+numCount = 1;
+
+%sets the sizes of the two vectors (a 1 by 1080*1080 array)
+A = size(rows*columns);
+B = size(rows*columns);
+
+%pupulates first vector that contains 1080 ones, followed by 1080 twos, etc.
+for f = 0 : (columns-1)
+  for z = f*rows : ((rows*(f+1)-1))
+   B(z+1) = numCount;
+  end
+  numCount = numCount + 1;
+end
+
+
+%populates the second vector that contains values 1-1080, 1080 times.
+for q = 0 : (columns-1)
+    oneEighty = 1;
+    for i = q*rows : ((rows*(q+1)-1))
+     A(i+1) = oneEighty;
+     oneEighty = oneEighty + 1;
+    end
+end
+
+
+
+% creates an array of all of the RGB values for each individual pixel
+pixels = impixel(cropped_image, A, B);
+
+%adds each column up
+totalColor = sum(pixels);
+
+%extracts each column from totalColor
+red = totalColor(:,1);
+green = totalColor(:,2);
+blue = totalColor(:,3);
+
+%finds the average color values of all of the pixels in the image
+averageRed = red/(columns*rows);
+averageGreen = green/(columns*rows);
+averageBlue = blue/(columns*rows);
